@@ -55,7 +55,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   width: 50%;
-  margin: 0 auto;
+  margin: 5% auto;
 }
 
 .story-container select {
@@ -91,13 +91,17 @@
 
 .rasa-training-header {
   display: flex;
+  top: 0;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
   background-color: #89ba17;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 10px 25px;
+  /* border-radius: 8px; */
   color: white;
+  position: fixed;
+  width: 100%;
+  left: 0;
 }
 
 .rasa-training-header h1 {
@@ -108,13 +112,15 @@
 
 .logout-button {
   padding: 10px 15px;
-  background-color: #007bff;
+  background-color: #53710d;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  right: 20px;
+  position: fixed;
 }
 
 .logout-button:hover {
-  background-color: #0056b3;
+  background-color: #333;
 }

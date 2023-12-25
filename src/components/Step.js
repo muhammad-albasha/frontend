@@ -3,7 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import React from 'react';
 
 let validateTimer = null;
-export const Step = ({ step }) => {
+export const Step = ({ step , closePopup}) => {
   const { control, register, handleSubmit, formState: {
     errors,
     isValidating,
@@ -43,27 +43,27 @@ export const Step = ({ step }) => {
       console.log("create");
     }
 
-    // try {
-    // const response = await fetch(`http://localhost:5000/api/stories/steps/${step._id}`, {
-    //   method: 'PUT',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    //   },
-    //   body: JSON.stringify(data)
-    // });
+    try {
+    const response = await fetch(`http://localhost:5000/api/stories/steps/${step._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify(data)
+    });
 
-    //   if (!response.ok) {
-    //     throw new Error('Fehler beim Aktualisieren des Steps');
-    //   }
-    //   if (response.ok) {
-    //     console.log("Response:", response);
-    //     console.log('Step erfolgreich aktualisiert');
-    //   }
+      if (!response.ok) {
+        throw new Error('Fehler beim Aktualisieren des Steps');
+      }
+      if (response.ok) {
+        console.log("Response:", response);
+        console.log('Step erfolgreich aktualisiert');
+      }
 
-    // } catch (error) {
-    //   console.error('Error:', error);
-    // }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
 
@@ -132,7 +132,7 @@ export const Step = ({ step }) => {
       <div>
         <label htmlFor="response">Response</label>
         <textarea
-          rows={8}
+          rows={5}
           style={{ width: "100%", resize: "vertical" }}
           {...register("response", {
             required: {
@@ -143,15 +143,12 @@ export const Step = ({ step }) => {
         {errors.response && <p style={{ color: "red" }}>{errors.response.message}</p>}
       </div>
       <br />
-
-      {/* <input type="text" name="examples" id="examples" defaultValue={step.examples} ref={register} /> */}
-      {/* <label htmlFor="action">Aktion</label> */}
-      {/* <input type="text" name="action" id="action" defaultValue={step.action} ref={register} /> */}
-      {/* <textarea name="response" id="response" defaultValue={step.response} ref={register} /> */}
-      <br />
-      <button type="submit" >
+      <button type="submit"  disabled={!isValid}>
         Speichern {isSubmitting && <div>Loading...</div>}
       </button>
+        <button type="button" onClick={closePopup}>
+            Abbrechen
+        </button>
 
     </form>
   );

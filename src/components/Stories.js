@@ -55,6 +55,10 @@ export const Stories = () => {
         setShowPopup(true);
     }
 
+    const closePopup = () => {
+        setShowPopup(false);
+    };
+
     return (
         <div className="story-container">
             <h2>Stories</h2>
@@ -80,9 +84,7 @@ export const Stories = () => {
                     {showPopup && (
                         <>
                             <div>
-                                <Step step={selectedStep} />
-                                <button onClick={() => setShowPopup(false)}>Close</button>
-                                <button onClick={() => setShowPopup(false)}>Save</button>
+                                <Step step={selectedStep} closePopup={closePopup} />
                             </div>
                         </>
                     )}
