@@ -17,12 +17,11 @@ const RasaTraining = () => {
   return (
     <div className="rasa-training-container">
       <div className="rasa-training-header">
-        <h1>Rasa Training data</h1>
-        <button onClick={handleLogout} className="logout-button">Logout</button>
+        <h1>Chatbot Training data</h1>
+        <button type='reset' onClick={handleLogout} className="logout-button">Logout</button>
         </div>
       <div className="rasa-training-content">
         <div className="story-section">
-          <h2>Stories</h2>
           <Stories />
         </div>
       </div>

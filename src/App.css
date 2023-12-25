@@ -1,6 +1,6 @@
 .login-form {
   max-width: 400px;
-  margin: 0 auto;
+  margin: 10% auto;;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -27,14 +27,14 @@
   padding: 10px;
   border: none;
   border-radius: 4px;
-  background-color: #007bff;
+  background-color: #89ba17;
   color: white;
   cursor: pointer;
   font-size: 16px;
 }
 
 .login-form button:hover {
-  background-color: #0056b3;
+  background-color: #d0d019;
 }
 
 .login-form .error-message {
@@ -45,4 +45,76 @@
 .login-form label {
   display: block;
   margin-bottom: 5px;
+}
+
+/* src/components/Stories.css */
+.story-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  width: 50%;
+  margin: 0 auto;
+}
+
+.story-container select {
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.story-container h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.story-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.story-container li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.story-container li:hover {
+  background-color: #efefef;
+}
+/* src/components/RasaTraining.css */
+.rasa-training-container {
+  padding: 20px;
+}
+
+.rasa-training-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #89ba17;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: white;
+}
+
+.rasa-training-header h1 {
+  color: #333;
+  margin: 0 auto;
+  color: white;
+}
+
+.logout-button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #0056b3;
 }

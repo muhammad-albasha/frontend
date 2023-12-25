@@ -1,10 +1,13 @@
 // src/components/Stories.js
 import React, { useState, useEffect } from 'react';
+import { Step } from './Step';
 
 export const Stories = () => {
     const [collectionContents, setCollectionContents] = useState([]);
     const [selectedStoryId, setSelectedStoryId] = useState('');
     const [selectedStory, setSelectedStory] = useState(null);
+    const [selectedStep, setSelectedStep] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
 
     useEffect(() => {
         const fetchCollectionContents = async () => {
@@ -16,15 +19,16 @@ export const Stories = () => {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
-                });             
+                });
                 console.log(`Bearer ${token}`);
                 console.log("Response:", response);
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     setCollectionContents(data);
-                  } else {
+                    console.log("Data:", data);
+                } else {
                     console.error('Unerwartete Antwort vom Server:', data);
-                  }                  
+                }
             }
             catch (error) {
                 console.error('Error fetching stories:', error);
@@ -42,34 +46,48 @@ export const Stories = () => {
     };
 
     const handleStepClick = (step) => {
-        // setSelectedStep(step);
-        // setShowPopup(true);
+        setSelectedStep(step);
+        setShowPopup(true);
     };
-    
-    
-    return (
-    <div className="story-container">
-        <select onChange={handleStorySelection} value={selectedStoryId}>
-            <option value="" disabled>Select a Story...</option>
-            {collectionContents.map((content, index) => (
-                <option key={index} value={content._id}>{content.name}</option>
-            ))}
-        </select>
 
-        {selectedStory && (
-            <div>
-                <h2>{selectedStory.name}</h2>
-                <ul>
-                    {selectedStory.steps.map((step, index) => (
-                        <li key={index} onClick={() => handleStepClick(step)}>
-                            <p>Intent: {step.intent}</p>
-                            {/* <p>Action: {step.action}</p> */}
-                        </li>
-                    ))}
-                </ul>
-                {/* <button onClick={addStep}>Add Step</button> */}
-            </div>
-        )}
+    const addStep = () => {
+        setSelectedStep(null);
+        setShowPopup(true);
+    }
+
+    return (
+        <div className="story-container">
+            <h2>Stories</h2>
+            <select title='select story' onChange={handleStorySelection} value={selectedStoryId}>
+                <option value="" disabled>Select a Story...</option>
+                {collectionContents.map((content, index) => (
+                    <option key={index} value={content._id}>{content.name}</option>
+                ))}
+            </select>
+
+            {selectedStory && (
+                <div>
+                    <h2>{selectedStory.name}</h2>
+                    <ul>
+                        {selectedStory.steps.map((step, index) => (
+                            <li key={index} onClick={() => handleStepClick(step)}>
+                                <p>Intent: {step.intent}</p>
+                                <p>Action: {step.action}</p>
+                            </li>
+                        ))}
+                    </ul>
+                    <button onClick={addStep}>Add Step</button>
+                    {showPopup && (
+                        <>
+                            <div>
+                                <Step step={selectedStep} />
+                                <button onClick={() => setShowPopup(false)}>Close</button>
+                                <button onClick={() => setShowPopup(false)}>Save</button>
+                            </div>
+                        </>
+                    )}
+                </div>
+            )}
         </div>
     );
-    }
+}
