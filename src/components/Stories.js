@@ -82,11 +82,11 @@ export const Stories = () => {
                     </ul>
                     <button onClick={addStep}>Add Step</button>
                     {showPopup && (
-                        <>
-                            <div>
+                        <div className='backdrop'>
+                            <div className='popup'>
                                 <Step step={selectedStep} closePopup={closePopup} />
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             )}

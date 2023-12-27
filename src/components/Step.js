@@ -1,9 +1,17 @@
 // components/Step.js
 import { useForm, useFieldArray } from 'react-hook-form';
 import React from 'react';
+import { useState, useEffect } from 'react';
+
+
 
 let validateTimer = null;
 export const Step = ({ step , closePopup}) => {
+  const [response, setResponse] = useState(null);
+  const [showImages, setShowImages] = useState(false);
+  const [showAttachments, setShowAttachments] = useState(false);
+  
+
   const { control, register, handleSubmit, formState: {
     errors,
     isValidating,
@@ -17,7 +25,7 @@ export const Step = ({ step , closePopup}) => {
       examples: step?.examples?.map(example => ({ text: example }))
     },
   });
-
+  
   const { remove, append, fields } = useFieldArray({
     control,
     name: 'examples',
@@ -32,9 +40,55 @@ export const Step = ({ step , closePopup}) => {
       },
     }
   });
+  
+  useEffect(() => {
+    const fetchResponse = async () => {
+      const response = await fetch(`http://localhost:5000/api/stories/response/${step.intent}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      setResponse(data);
+      setShowImages(data.images?.length > 0);
+      setShowAttachments(data.attachments?.length > 0);
+    };
+  
+    if (step && step.intent) {
+      fetchResponse();
+    }
+  }, [step]);
 
+  const toggleShowImages = () => {
+    setShowImages(!showImages);
+    if (showAttachments) {
+      setShowAttachments(false);
+    }
+  };
+  
+  const toggleShowAttachments = () => {
+    setShowAttachments(!showAttachments);
+    if (showImages) {
+      setShowImages(false);
+    }
+  };
+  
+  
   const onSubmit = async (data) => {
     data.examples = data.examples.map(example => example.text);
+
+      if(setShowAttachments){
+          data.images = data.images.split(',').map(item => item.trim());
+          delete data.attachments;
+      }else if(setShowImages){
+        data.attachments = data.attachments.split(',').map(item => item.trim());
+        delete data.images;
+      }else{
+        delete data.images;
+        delete data.attachments;
+      }
+
+
     console.log("🚀 ~ data:", data);
 
     if (step) {
@@ -66,10 +120,35 @@ export const Step = ({ step , closePopup}) => {
     }
   };
 
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
+    <form onSubmit={handleSubmit(onSubmit)} className="step-form">
+    <div className="form-content">
+        <label htmlFor="examples">Beispiele</label>
+        <div className="examples-section">
+        {fields.map((field, index) => (
+          <div key={field.id}>
+            <input
+              type="text"
+              defaultValue={field.text}
+              {...register(`examples.${index}.text`, {
+                required: {
+                  value: true,
+                  message: 'Bitte Beispiel angeben'
+                },
+              })}
+            />
+            <button type="button" onClick={() => remove(index)}>
+              x
+            </button>
+          </div>
+        ))}
+        {errors.examples && <p style={{ color: "red" }}>{errors.examples?.root?.message}</p>}
+      </div>
+        <button type="button" onClick={() => append({ text: '' })}>
+          Hinzufügen
+        </button>
+      </div>
+      <div className="rest-section">
         <label htmlFor="intent">Intent</label>
         <input type="text"
 
@@ -103,37 +182,12 @@ export const Step = ({ step , closePopup}) => {
           })} />
         {isValidating && <p>Validating...</p>}
         {errors.intent && <p style={{ color: "red" }}>{errors.intent.message}</p>}
-
-      </div>
-      <div>
-        <label htmlFor="examples">Beispiele</label>
-        {fields.map((field, index) => (
-          <div key={field.id}>
-            <input
-              type="text"
-              defaultValue={field.text}
-              {...register(`examples.${index}.text`, {
-                required: {
-                  value: true,
-                  message: 'Bitte Beispiel angeben'
-                },
-              })}
-            />
-            <button type="button" onClick={() => remove(index)}>
-              Löschen
-            </button>
-          </div>
-        ))}
-        {errors.examples && <p style={{ color: "red" }}>{errors.examples?.root?.message}</p>}
-        <button type="button" onClick={() => append({ text: '' })}>
-          Hinzufügen
-        </button>
-      </div>
       <div>
         <label htmlFor="response">Response</label>
         <textarea
-          rows={5}
-          style={{ width: "100%", resize: "vertical" }}
+          rows={6}
+          defaultValue={response?.text}
+          style={{ width: "100%", resize: "none" }}
           {...register("response", {
             required: {
               value: true,
@@ -142,14 +196,43 @@ export const Step = ({ step , closePopup}) => {
           })} />
         {errors.response && <p style={{ color: "red" }}>{errors.response.message}</p>}
       </div>
-      <br />
+      <div>
+      <label>
+        <input type="checkbox" checked={showImages} onChange={toggleShowImages} />
+        Image URLs anzeigen
+      </label>
+    </div>
+    <div>
+      <label>
+        <input type="checkbox" checked={showAttachments} onChange={toggleShowAttachments} />
+        Attachment URLs anzeigen
+      </label>
+    </div>
+
+    {showImages && (
+      <div>
+        <label htmlFor="images">Image URLs</label>
+        <input type="text" {...register("images")} defaultValue={response ? response.images.join(", ") : ''} />
+      </div>
+    )}
+
+    {showAttachments && (
+      <div>
+        <label htmlFor="attachments">Attachment URLs</label>
+        <input type="text" {...register("attachments")} defaultValue={response ? response.attachments.join(", ") : ''} />
+      </div>
+    )}
+    <br />
+    <br />
+    <div className="form-footer">
       <button type="submit"  disabled={!isValid}>
         Speichern {isSubmitting && <div>Loading...</div>}
       </button>
         <button type="button" onClick={closePopup}>
-            Abbrechen
+        Abbrechen
         </button>
-
+        </div>
+      </div>
     </form>
   );
 }
