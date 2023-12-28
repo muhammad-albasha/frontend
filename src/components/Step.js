@@ -77,18 +77,6 @@ export const Step = ({ step , closePopup}) => {
   const onSubmit = async (data) => {
     data.examples = data.examples.map(example => example.text);
 
-      if(setShowAttachments){
-          data.images = data.images.split(',').map(item => item.trim());
-          delete data.attachments;
-      }else if(setShowImages){
-        data.attachments = data.attachments.split(',').map(item => item.trim());
-        delete data.images;
-      }else{
-        delete data.images;
-        delete data.attachments;
-      }
-
-
     console.log("🚀 ~ data:", data);
 
     if (step) {
@@ -186,13 +174,13 @@ export const Step = ({ step , closePopup}) => {
         <label htmlFor="response">Response</label>
         <textarea
           rows={6}
-          defaultValue={response?.text}
+          // defaultValue={response?.text}
           style={{ width: "100%", resize: "none" }}
           {...register("response", {
-            required: {
-              value: true,
-              message: 'Bitte Response angeben'
-            },
+            // required: {
+            //   value: true,
+            //   message: 'Bitte Response angeben'
+            // },
           })} />
         {errors.response && <p style={{ color: "red" }}>{errors.response.message}</p>}
       </div>
@@ -225,7 +213,7 @@ export const Step = ({ step , closePopup}) => {
     <br />
     <br />
     <div className="form-footer">
-      <button type="submit"  disabled={!isValid}>
+      <button type="submit"  /*disabled={!isValid}*/ >
         Speichern {isSubmitting && <div>Loading...</div>}
       </button>
         <button type="button" onClick={closePopup}>

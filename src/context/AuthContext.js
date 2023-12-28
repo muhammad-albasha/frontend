@@ -10,17 +10,24 @@ export const AuthProvider = ({ children }) => {
     return !!token;
   });
 
-  const login = (token) => {
+  const [userRole, setUserRole] = useState(() => {
+    return localStorage.getItem('userRole');
+  });
+
+  const login = (token, role) => {
     localStorage.setItem('token', token);
+    localStorage.setItem('userRole', role);
     setIsAuthenticated(true);
+    setUserRole(role);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
     setIsAuthenticated(false);
+    setUserRole(null);
   };
 
-  // Logout after 1 hour
   useEffect(() => {
     const timeout = setTimeout(() => {
       logout();
@@ -29,8 +36,10 @@ export const AuthProvider = ({ children }) => {
   }, [isAuthenticated]);
   
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, userRole }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

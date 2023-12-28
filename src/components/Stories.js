@@ -3,11 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { Step } from './Step';
 
 export const Stories = () => {
-    const [collectionContents, setCollectionContents] = useState([]);
+const [collectionContents, setCollectionContents] = useState([]);
     const [selectedStoryId, setSelectedStoryId] = useState('');
     const [selectedStory, setSelectedStory] = useState(null);
     const [selectedStep, setSelectedStep] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
+    const [AddStory, setAddStory] = useState(false);
 
     useEffect(() => {
         const fetchCollectionContents = async () => {
@@ -16,7 +17,7 @@ export const Stories = () => {
                 const response = await fetch(`http://localhost:5000/api/stories`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json', 
                         'Authorization': `Bearer ${token}`,
                     },
                 });
@@ -63,7 +64,7 @@ export const Stories = () => {
         <div className="story-container">
             <h2>Stories</h2>
             <select title='select story' onChange={handleStorySelection} value={selectedStoryId}>
-                <option value="" disabled>Select a Story...</option>
+                <option value=""> None </option>
                 {collectionContents.map((content, index) => (
                     <option key={index} value={content._id}>{content.name}</option>
                 ))}
@@ -90,6 +91,7 @@ export const Stories = () => {
                     )}
                 </div>
             )}
+
         </div>
     );
 }
