@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Stories } from './Stories';
-import AdminAddUser, { UserManager } from './UserManager';
+import { UserManager } from './UserManager';
 
 const RasaTraining = () => {
   const { logout, userRole } = useAuth();

@@ -16,7 +16,7 @@ export const Step = ({ step , closePopup}) => {
     errors,
     isValidating,
     isSubmitting,
-    isValid,
+    // isValid,
   } } = useForm({
     mode: 'all',
     reValidateMode: 'onChange',
@@ -86,7 +86,7 @@ export const Step = ({ step , closePopup}) => {
     }
 
     try {
-    const response = await fetch(`http://localhost:5000/api/stories/steps/${step._id}`, {
+    const fetchStep = await fetch(`http://localhost:5000/api/stories/steps/${step._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -95,12 +95,28 @@ export const Step = ({ step , closePopup}) => {
       body: JSON.stringify(data)
     });
 
-      if (!response.ok) {
+      if (!fetchStep.ok) {
         throw new Error('Fehler beim Aktualisieren des Steps');
       }
-      if (response.ok) {
-        console.log("Response:", response);
+      if (fetchStep.ok) {
+        console.log("Step:", fetchStep);
         console.log('Step erfolgreich aktualisiert');
+      }
+    const fetchResponse = await fetch(`http://localhost:5000/api/stories/response/${step.intent}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify(data)
+    });
+
+      if (!fetchResponse.ok) {
+        throw new Error('Fehler beim Aktualisieren des Steps');
+      }
+      if (fetchResponse.ok) {
+        console.log("Response:", fetchResponse);
+        console.log('Response erfolgreich aktualisiert');
       }
 
     } catch (error) {
@@ -174,13 +190,13 @@ export const Step = ({ step , closePopup}) => {
         <label htmlFor="response">Response</label>
         <textarea
           rows={6}
-          // defaultValue={response?.text}
+          defaultValue={response?.text}
           style={{ width: "100%", resize: "none" }}
           {...register("response", {
-            // required: {
-            //   value: true,
-            //   message: 'Bitte Response angeben'
-            // },
+            required: {
+              // value: true,
+              message: 'Bitte Response angeben'
+            },
           })} />
         {errors.response && <p style={{ color: "red" }}>{errors.response.message}</p>}
       </div>

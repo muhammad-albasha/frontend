@@ -8,7 +8,7 @@ const [collectionContents, setCollectionContents] = useState([]);
     const [selectedStory, setSelectedStory] = useState(null);
     const [selectedStep, setSelectedStep] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
-    const [AddStory, setAddStory] = useState(false);
+    // const [AddStory, setAddStory] = useState(false);
 
     useEffect(() => {
         const fetchCollectionContents = async () => {
