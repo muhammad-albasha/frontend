@@ -6,13 +6,12 @@ import { useState, useEffect } from 'react';
 
 
 let validateTimer = null;
-export const Step = ({ step , closePopup}) => {
-  const [response, setResponse] = useState(null);
+export const Step = ({ step, story, closePopup}) => {
   const [showImages, setShowImages] = useState(false);
   const [showAttachments, setShowAttachments] = useState(false);
   
 
-  const { control, register, handleSubmit, formState: {
+  const { control, register, setValue, handleSubmit, formState: {
     errors,
     isValidating,
     isSubmitting,
@@ -49,7 +48,7 @@ export const Step = ({ step , closePopup}) => {
         }
       });
       const data = await response.json();
-      setResponse(data);
+      setValue("response", data);
       setShowImages(data.images?.length > 0);
       setShowAttachments(data.attachments?.length > 0);
     };
@@ -61,15 +60,19 @@ export const Step = ({ step , closePopup}) => {
 
   const toggleShowImages = () => {
     setShowImages(!showImages);
+    setValue("response.images", []);
     if (showAttachments) {
       setShowAttachments(false);
+      setValue("response.attachments", []);
     }
   };
   
   const toggleShowAttachments = () => {
     setShowAttachments(!showAttachments);
+    setValue("response.attachments", []);
     if (showImages) {
       setShowImages(false);
+      setValue("response.images", []);
     }
   };
   
@@ -86,7 +89,7 @@ export const Step = ({ step , closePopup}) => {
     }
 
     try {
-    const fetchStep = await fetch(`http://localhost:5000/api/stories/steps/${step._id}`, {
+    const fetchStep = await fetch(`http://localhost:5000/api/stories/${story._id}/${step._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -102,22 +105,22 @@ export const Step = ({ step , closePopup}) => {
         console.log("Step:", fetchStep);
         console.log('Step erfolgreich aktualisiert');
       }
-    const fetchResponse = await fetch(`http://localhost:5000/api/stories/response/${step.intent}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify(data)
-    });
+    // const fetchResponse = await fetch(`http://localhost:5000/api/stories/response/${step.intent}`, {
+    //   method: 'PUT',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    //   },
+    //   body: JSON.stringify(data)
+    // });
 
-      if (!fetchResponse.ok) {
-        throw new Error('Fehler beim Aktualisieren des Steps');
-      }
-      if (fetchResponse.ok) {
-        console.log("Response:", fetchResponse);
-        console.log('Response erfolgreich aktualisiert');
-      }
+    //   if (!fetchResponse.ok) {
+    //     throw new Error('Fehler beim Aktualisieren des Steps');
+    //   }
+    //   if (fetchResponse.ok) {
+    //     console.log("Response:", fetchResponse);
+    //     console.log('Response erfolgreich aktualisiert');
+    //   }
 
     } catch (error) {
       console.error('Error:', error);
@@ -162,8 +165,8 @@ export const Step = ({ step , closePopup}) => {
               message: 'Bitte Intent angeben'
             },
             pattern: {
-              value: /^[a-zA-Z0-9]+$/,
-              message: 'Bitte nur Buchstaben und Zahlen verwenden'
+              value: /^[a-zA-Z0-9_]+$/,
+              message: 'Bitte nur Buchstaben, Zahlen und Unterstriche verwenden'
             },
             validate: async (value) => {
               if(value === step?.intent) return true;
@@ -190,9 +193,8 @@ export const Step = ({ step , closePopup}) => {
         <label htmlFor="response">Response</label>
         <textarea
           rows={6}
-          defaultValue={response?.text}
           style={{ width: "100%", resize: "none" }}
-          {...register("response", {
+          {...register("response.text", {
             required: {
               // value: true,
               message: 'Bitte Response angeben'
@@ -216,14 +218,14 @@ export const Step = ({ step , closePopup}) => {
     {showImages && (
       <div>
         <label htmlFor="images">Image URLs</label>
-        <input type="text" {...register("images")} defaultValue={response ? response.images.join(", ") : ''} />
+        <input type="text" {...register("response.images.0")} />
       </div>
     )}
 
     {showAttachments && (
       <div>
         <label htmlFor="attachments">Attachment URLs</label>
-        <input type="text" {...register("attachments")} defaultValue={response ? response.attachments.join(", ") : ''} />
+        <input type="text" {...register("response.attachments.0")} />
       </div>
     )}
     <br />

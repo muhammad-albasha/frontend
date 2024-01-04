@@ -85,7 +85,7 @@ const [collectionContents, setCollectionContents] = useState([]);
                     {showPopup && (
                         <div className='backdrop'>
                             <div className='popup'>
-                                <Step step={selectedStep} closePopup={closePopup} />
+                                <Step story={selectedStory} step={selectedStep} closePopup={closePopup} />
                             </div>
                         </div>
                     )}
