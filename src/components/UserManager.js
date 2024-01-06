@@ -91,7 +91,7 @@ export const UserManager = () => {
             password: '',
             role: 'user',
             has2FA: false,
-            active: false,
+            active: true,
             stories: [{ title: '' }]
         });
     };
