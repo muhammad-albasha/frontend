@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useForm , useFieldArray} from 'react-hook-form';
 
 export const UserManager = () => {
@@ -19,7 +19,7 @@ export const UserManager = () => {
         }
     });
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             const response = await fetch(`http://localhost:5000/api/users`, {
@@ -38,11 +38,11 @@ export const UserManager = () => {
         } catch (error) {
             console.error('Error fetching users:', error);
         }
-    };
+    }, [setValue]);
 
     useEffect(() => {
         fetchUsers();
-    }, [setValue]);
+    }, [fetchUsers]);
 
     const handleUserSelection = (e) => {
         const userId = e.target.value;
