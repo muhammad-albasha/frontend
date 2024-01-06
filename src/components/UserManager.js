@@ -56,7 +56,7 @@ export const UserManager = () => {
     const active = watch('active');
 
     const onSubmit = async (data) => {
-        const { selectedUserId, users, ...userData } = data;
+        const { selectedUserId, users, _id, ...userData } = data;
         const token = localStorage.getItem('token');
         const url = selectedUserId ? 
         `http://localhost:5000/api/users/user/${selectedUserId}` : 
