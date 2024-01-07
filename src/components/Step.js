@@ -64,7 +64,7 @@ export const Step = ({ step, closePopup}) => {
     } catch (error) {
       console.error('Error fetching response details', error);
     }
-  }, [setValue]); // Abhängigkeit zu setValue
+  }, [setValue]);
 
   useEffect(() => {
     if (step && step.response_id) {
@@ -91,13 +91,18 @@ export const Step = ({ step, closePopup}) => {
   const onSubmit = async (data) => {
     data.examples = data.examples.map(example => example.text);
 
-    console.log("🚀 ~ data:", data);
-    console.log("🚀 ~ response_id", step.response_id);
+    const stepData = {
+      intent: data.intent,
+      examples: data.examples,
+      action: data.action,
+      response_id: step.response_id
+  };
+  console.log("🚀 ~ response_id", step.response_id);
 
-    if (step) {
-      console.log("update");
+    if (step && step._id) {
+      console.log("Update Step", stepData);
     } else {
-      console.log("create");
+      console.log("Create Step", stepData);
     }
   };
 

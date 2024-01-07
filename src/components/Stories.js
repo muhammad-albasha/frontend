@@ -8,7 +8,6 @@ export const Stories = () => {
     const [selectedStory, setSelectedStory] = useState(null);
     const [selectedStep, setSelectedStep] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
-    // const [response, setResponse] = useState(null);
 
     useEffect(() => {
         const fetchStories = async () => {
@@ -46,7 +45,12 @@ export const Stories = () => {
     };
 
     const addStep = () => {
-        setSelectedStep(null);
+        setSelectedStep({
+            intent: '',
+            examples: [],
+            action: 'answer',
+            response_id: null
+        });
         setShowPopup(true);
     }
 
