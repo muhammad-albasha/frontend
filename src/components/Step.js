@@ -1,17 +1,15 @@
 // components/Step.js
 import { useForm, useFieldArray } from 'react-hook-form';
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 
 
 let validateTimer = null;
 export const Step = ({ step, story, closePopup}) => {
-  const [showImages, setShowImages] = useState(false);
-  const [showAttachments, setShowAttachments] = useState(false);
   
 
-  const { control, register, setValue, handleSubmit, formState: {
+  const { control, register, setValue, handleSubmit, watch, getValues, formState: {
     errors,
     isValidating,
     isSubmitting,
@@ -21,10 +19,15 @@ export const Step = ({ step, story, closePopup}) => {
     reValidateMode: 'onChange',
     defaultValues: {
       ...step,
+      showImages: false,
+      showAttachments: false,
       examples: step?.examples?.map(example => ({ text: example }))
     },
   });
   
+  const showImages = watch("showImages");
+  const showAttachments = watch("showAttachments");
+
   const { remove, append, fields } = useFieldArray({
     control,
     name: 'examples',
@@ -39,43 +42,26 @@ export const Step = ({ step, story, closePopup}) => {
       },
     }
   });
-  
   useEffect(() => {
-    const fetchResponse = async () => {
-      const response = await fetch(`http://localhost:5000/api/stories/response/${step.intent}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      const data = await response.json();
-      setValue("response", data);
-      setShowImages(data.images?.length > 0);
-      setShowAttachments(data.attachments?.length > 0);
-    };
-  
-    if (step && step.intent) {
-      fetchResponse();
-    }
-  }, [step]);
+    register('response.images.0');
+    register('response.attachments.0');
+  }, [register]);
 
   const toggleShowImages = () => {
-    setShowImages(!showImages);
-    setValue("response.images", []);
-    if (showAttachments) {
-      setShowAttachments(false);
-      setValue("response.attachments", []);
+    const currentShowImages = getValues("showImages");
+    setValue("showImages", !currentShowImages);
+    if (getValues("showAttachments")) {
+      setValue("showAttachments", false);
     }
   };
-  
+
   const toggleShowAttachments = () => {
-    setShowAttachments(!showAttachments);
-    setValue("response.attachments", []);
-    if (showImages) {
-      setShowImages(false);
-      setValue("response.images", []);
+    const currentShowAttachments = getValues("showAttachments");
+    setValue("showAttachments", !currentShowAttachments);
+    if (getValues("showImages")) {
+      setValue("showImages", false);
     }
   };
-  
   
   const onSubmit = async (data) => {
     data.examples = data.examples.map(example => example.text);
@@ -86,44 +72,6 @@ export const Step = ({ step, story, closePopup}) => {
       console.log("update");
     } else {
       console.log("create");
-    }
-
-    try {
-    const fetchStep = await fetch(`http://localhost:5000/api/stories/${story._id}/${step._id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify(data)
-    });
-
-      if (!fetchStep.ok) {
-        throw new Error('Fehler beim Aktualisieren des Steps');
-      }
-      if (fetchStep.ok) {
-        console.log("Step:", fetchStep);
-        console.log('Step erfolgreich aktualisiert');
-      }
-    // const fetchResponse = await fetch(`http://localhost:5000/api/stories/response/${step.intent}`, {
-    //   method: 'PUT',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `Bearer ${localStorage.getItem('token')}`,
-    //   },
-    //   body: JSON.stringify(data)
-    // });
-
-    //   if (!fetchResponse.ok) {
-    //     throw new Error('Fehler beim Aktualisieren des Steps');
-    //   }
-    //   if (fetchResponse.ok) {
-    //     console.log("Response:", fetchResponse);
-    //     console.log('Response erfolgreich aktualisiert');
-    //   }
-
-    } catch (error) {
-      console.error('Error:', error);
     }
   };
 
@@ -204,13 +152,13 @@ export const Step = ({ step, story, closePopup}) => {
       </div>
       <div>
       <label>
-        <input type="checkbox" checked={showImages} onChange={toggleShowImages} />
+        <input type="checkbox" {...register("showImages")} onChange={toggleShowImages} />
         Image URLs anzeigen
       </label>
     </div>
     <div>
       <label>
-        <input type="checkbox" checked={showAttachments} onChange={toggleShowAttachments} />
+      <input type="checkbox" {...register("showAttachments")} onChange={toggleShowAttachments} />
         Attachment URLs anzeigen
       </label>
     </div>

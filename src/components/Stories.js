@@ -3,46 +3,37 @@ import React, { useState, useEffect } from 'react';
 import { Step } from './Step';
 
 export const Stories = () => {
-const [collectionContents, setCollectionContents] = useState([]);
+    const [stories, setStories] = useState([]);
     const [selectedStoryId, setSelectedStoryId] = useState('');
     const [selectedStory, setSelectedStory] = useState(null);
     const [selectedStep, setSelectedStep] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
-    // const [AddStory, setAddStory] = useState(false);
 
     useEffect(() => {
-        const fetchCollectionContents = async () => {
+        const fetchStories = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:5000/api/stories`, {
+                const response = await fetch('http://localhost:5000/api/stories', {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json', 
-                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
                     },
                 });
-                console.log(`Bearer ${token}`);
-                console.log("Response:", response);
                 const data = await response.json();
-                if (Array.isArray(data)) {
-                    setCollectionContents(data);
-                    console.log("Data:", data);
-                } else {
-                    console.error('Unerwartete Antwort vom Server:', data);
-                }
-            }
-            catch (error) {
-                console.error('Error fetching stories:', error);
+                setStories(data);
+            } catch (error) {
+                console.error('Error fetching stories', error);
             }
         };
 
-        fetchCollectionContents();
+        fetchStories();
     }, []);
 
     const handleStorySelection = (e) => {
         const selectedId = e.target.value;
         setSelectedStoryId(selectedId);
-        const story = collectionContents.find(story => story._id === selectedId);
+        const story = stories.find(story => story._id === selectedId);
         setSelectedStory(story);
     };
 
@@ -65,14 +56,14 @@ const [collectionContents, setCollectionContents] = useState([]);
             <h2>Stories</h2>
             <select title='select story' onChange={handleStorySelection} value={selectedStoryId}>
                 <option value=""> None </option>
-                {collectionContents.map((content, index) => (
-                    <option key={index} value={content._id}>{content.name}</option>
+                {stories.map((content, index) => (
+                    <option key={index} value={content._id}>{content.story}</option>
                 ))}
-            </select>
+            </select>   
 
             {selectedStory && (
                 <div>
-                    <h2>{selectedStory.name}</h2>
+                    <h2>{selectedStory.story}</h2>
                     <ul>
                         {selectedStory.steps.map((step, index) => (
                             <li key={index} onClick={() => handleStepClick(step)}>
