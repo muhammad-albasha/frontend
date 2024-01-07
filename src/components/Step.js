@@ -1,12 +1,12 @@
 // components/Step.js
 import { useForm, useFieldArray } from 'react-hook-form';
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 
 
 let validateTimer = null;
-export const Step = ({ step, story, closePopup}) => {
+export const Step = ({ step, closePopup}) => {
   
 
   const { control, register, setValue, handleSubmit, watch, getValues, formState: {
@@ -42,10 +42,35 @@ export const Step = ({ step, story, closePopup}) => {
       },
     }
   });
+
+  const fetchResponse = useCallback(async (responseId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/responses/${responseId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+
+      setValue('response.text', data.text);
+      setValue('response.images', data.images);
+      setValue('response.attachments', data.attachments);
+
+      setValue('showImages', data.images && data.images.length > 0);
+      setValue('showAttachments', data.attachments && data.attachments.length > 0);
+    } catch (error) {
+      console.error('Error fetching response details', error);
+    }
+  }, [setValue]); // Abhängigkeit zu setValue
+
   useEffect(() => {
-    register('response.images.0');
-    register('response.attachments.0');
-  }, [register]);
+    if (step && step.response_id) {
+      fetchResponse(step.response_id);
+    }
+  }, [step, step?.response_id, fetchResponse]);
 
   const toggleShowImages = () => {
     const currentShowImages = getValues("showImages");
@@ -67,6 +92,7 @@ export const Step = ({ step, story, closePopup}) => {
     data.examples = data.examples.map(example => example.text);
 
     console.log("🚀 ~ data:", data);
+    console.log("🚀 ~ response_id", step.response_id);
 
     if (step) {
       console.log("update");

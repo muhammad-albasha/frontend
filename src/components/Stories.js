@@ -8,6 +8,7 @@ export const Stories = () => {
     const [selectedStory, setSelectedStory] = useState(null);
     const [selectedStep, setSelectedStep] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
+    // const [response, setResponse] = useState(null);
 
     useEffect(() => {
         const fetchStories = async () => {
@@ -22,6 +23,8 @@ export const Stories = () => {
                 });
                 const data = await response.json();
                 setStories(data);
+                console.log("🚀 ~ data:", data);
+
             } catch (error) {
                 console.error('Error fetching stories', error);
             }
