@@ -45,14 +45,18 @@ export const Stories = () => {
     };
 
     const addStep = () => {
-        setSelectedStep({
+        const newStep = {
+            _id: null,
             intent: '',
             examples: [],
             action: 'answer',
-            response_id: null
-        });
+            response_id: null,
+            story_id: selectedStoryId
+        };
+        setSelectedStep(newStep);
         setShowPopup(true);
     }
+    
 
     const closePopup = () => {
         setShowPopup(false);

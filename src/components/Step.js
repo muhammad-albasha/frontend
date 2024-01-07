@@ -89,14 +89,43 @@ export const Step = ({ step, closePopup}) => {
   };
   
   const onSubmit = async (data) => {
+
+    if (!step.story_id) {
+      console.error('Story ID is missing');
+      return;
+  }
+
     data.examples = data.examples.map(example => example.text);
 
     const stepData = {
+      _id: step._id,
       intent: data.intent,
       examples: data.examples,
       action: data.action,
       response_id: step.response_id
   };
+
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:5000/api/stories/${step.story_id}/steps${step._id ? `/${step._id}` : ''}`, {
+      method: step._id ? 'PUT' : 'POST',
+
+      headers: {
+
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(stepData)
+    });
+    const data = await response.json();
+    console.log("🚀 ~ data", data);
+    closePopup();
+  }
+  catch (error) {
+    console.error('Error saving step', error);
+  }
+    console.log("🚀 ~ stepData", stepData);
+
   console.log("🚀 ~ response_id", step.response_id);
 
     if (step && step._id) {
