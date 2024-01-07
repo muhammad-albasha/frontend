@@ -19,9 +19,14 @@ export const Step = ({ step, closePopup}) => {
     reValidateMode: 'onChange',
     defaultValues: {
       ...step,
-      showImages: false,
-      showAttachments: false,
-      examples: step?.examples?.map(example => ({ text: example }))
+      showImages: step.images && step.images.length > 0,
+      showAttachments: step.attachments && step.attachments.length > 0,
+      examples: step.examples ? step.examples.map(example => ({ text: example })) : [],
+      response: {
+        text: step.text,
+        images: step.images || [],
+        attachments: step.attachments || [],
+      },
     },
   });
   
@@ -43,34 +48,41 @@ export const Step = ({ step, closePopup}) => {
     }
   });
 
-  const fetchResponse = useCallback(async (responseId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/responses/${responseId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
+  // const fetchResponse = useCallback(async () => {
+  //   try {
+  //     const token = localStorage.getItem('token');
+  
+  //     // Assuming step.story_id and step._id are available and correctly set
+  //     const storyId = step.story_id;
+  //     const stepId = step._id;
+  
+  //     const response = await fetch(`http://localhost:5000/api/stories/${storyId}/steps/${stepId}`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': `Bearer ${token}`,
+  //       },
+  //     });
+  
+  //     const data = await response.json();
+      
+  //     setValue('response.text', data.text);
+  //     setValue('response.images', data.images);
+  //     setValue('response.attachments', data.attachments);
+      
+  //     setValue('showImages', data.images && data.images.length > 0);
+  //     setValue('showAttachments', data.attachments && data.attachments.length > 0);
+      
+  //   } catch (error) {
+  //     console.error('Error fetching response details', error);
+  //   }
+  // }, [setValue, step]);
 
-      setValue('response.text', data.text);
-      setValue('response.images', data.images);
-      setValue('response.attachments', data.attachments);
-
-      setValue('showImages', data.images && data.images.length > 0);
-      setValue('showAttachments', data.attachments && data.attachments.length > 0);
-    } catch (error) {
-      console.error('Error fetching response details', error);
-    }
-  }, [setValue]);
-
-  useEffect(() => {
-    if (step && step.response_id) {
-      fetchResponse(step.response_id);
-    }
-  }, [step, step?.response_id, fetchResponse]);
+  // useEffect(() => {
+  //   if (step && step.response_id) {
+  //     fetchResponse(step.response_id);
+  //   }
+  // }, [step, step?.response_id, fetchResponse]);
 
   const toggleShowImages = () => {
     const currentShowImages = getValues("showImages");
@@ -89,44 +101,42 @@ export const Step = ({ step, closePopup}) => {
   };
   
   const onSubmit = async (data) => {
-
     if (!step.story_id) {
-      console.error('Story ID is missing');
-      return;
-  }
+        console.error('Story ID is missing');
+        return;
+    }
 
     data.examples = data.examples.map(example => example.text);
-
     const stepData = {
-      _id: step._id,
-      intent: data.intent,
-      examples: data.examples,
-      action: data.action,
-      response_id: step.response_id
-  };
+        storyId: step.story_id,  // Include storyId in the data
+        intent: data.intent,
+        examples: data.examples,
+        action: 'answer',
+        text: data.response.text,
+        images: data.response.images,
+        attachments: data.response.attachments,
+    };
 
-  try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:5000/api/stories/${step.story_id}/steps${step._id ? `/${step._id}` : ''}`, {
-      method: step._id ? 'PUT' : 'POST',
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:5000/api/stories/steps`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(stepData)
+        });
+        const responseData = await response.json();
+        console.log("🚀 ~ data", responseData);
+        closePopup();
+    } catch (error) {
+        console.error('Error saving step', error);
+    }
 
-      headers: {
-
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(stepData)
-    });
-    const data = await response.json();
-    console.log("🚀 ~ data", data);
-    closePopup();
-  }
-  catch (error) {
-    console.error('Error saving step', error);
-  }
     console.log("🚀 ~ stepData", stepData);
 
-  console.log("🚀 ~ response_id", step.response_id);
+    console.log("🚀 ~ response_id", step.response_id);
 
     if (step && step._id) {
       console.log("Update Step", stepData);

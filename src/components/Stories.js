@@ -1,4 +1,3 @@
-// src/components/Stories.js
 import React, { useState, useEffect } from 'react';
 import { Step } from './Step';
 
@@ -46,17 +45,14 @@ export const Stories = () => {
 
     const addStep = () => {
         const newStep = {
-            _id: null,
+            story_id: selectedStory._id,
             intent: '',
             examples: [],
-            action: 'answer',
-            response_id: null,
-            story_id: selectedStoryId
+            action: ''
         };
         setSelectedStep(newStep);
         setShowPopup(true);
     }
-    
 
     const closePopup = () => {
         setShowPopup(false);
@@ -66,7 +62,7 @@ export const Stories = () => {
         <div className="story-container">
             <h2>Stories</h2>
             <select title='select story' onChange={handleStorySelection} value={selectedStoryId}>
-                <option value=""> None </option>
+                <option value="">None</option>
                 {stories.map((content, index) => (
                     <option key={index} value={content._id}>{content.story}</option>
                 ))}
@@ -93,7 +89,6 @@ export const Stories = () => {
                     )}
                 </div>
             )}
-
         </div>
     );
 }
