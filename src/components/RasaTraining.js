@@ -16,16 +16,18 @@ const RasaTraining = () => {
   return (
     <div className="rasa-training-container">
       <div className="rasa-training-header">
-        <h1>Chatbot Training data</h1>
-        <button type='reset' onClick={handleLogout} className="logout-button">Logout</button>
+        <h1>Chatbot Training Data</h1>
+        <button onClick={handleLogout} className="logout-button">Logout</button>
       </div>
       <div className="rasa-training-content">
         <div className="story-section">
           <Stories />
         </div>
-        <div className="user-section">
-          {userRole === 'admin' && <UserManager />}
-        </div>
+        {userRole === 'admin' && (
+          <div className="user-section">
+            <UserManager />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -3,16 +3,14 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import React from 'react';
 
 
-
 let validateTimer = null;
-export const Step = ({ step, closePopup}) => {
-  
+export const Step = ({ step, closePopup }) => {
 
   const { control, register, setValue, handleSubmit, watch, getValues, formState: {
     errors,
     isValidating,
     isSubmitting,
-    // isValid,
+    isValid,
   } } = useForm({
     mode: 'all',
     reValidateMode: 'onChange',
@@ -71,7 +69,7 @@ export const Step = ({ step, closePopup}) => {
 
     data.examples = data.examples.map(example => example.text);
     const stepData = {
-        storyId: step.story_id, // Used for creating a new step
+        storyId: step.story_id,
         intent: data.intent,
         examples: data.examples,
         action: 'answer',
@@ -95,16 +93,17 @@ export const Step = ({ step, closePopup}) => {
             body: JSON.stringify(stepData)
         });
 
-        const responseData = await response.json();
-        console.log("🚀 ~ data", responseData);
-        closePopup();
-    } catch (error) {
+        if (response.ok) {
+          const responseData = await response.json();
+          console.log("Step saved, response:", responseData);
+          closePopup();
+        } else {
+          throw new Error(`Error: ${response.status}`);
+        }
+      } catch (error) {
         console.error('Error saving step', error);
-    }
-
-    console.log("🚀 ~ stepData", stepData);
-};
-
+      }
+    };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="step-form">
@@ -175,7 +174,7 @@ export const Step = ({ step, closePopup}) => {
           style={{ width: "100%", resize: "none" }}
           {...register("response.text", {
             required: {
-              // value: true,
+              value: true,
               message: 'Bitte Response angeben'
             },
           })} />
@@ -210,7 +209,7 @@ export const Step = ({ step, closePopup}) => {
     <br />
     <br />
     <div className="form-footer">
-      <button type="submit"  /*disabled={!isValid}*/ >
+      <button type="submit"  disabled={!isValid} >
         Speichern {isSubmitting && <div>Loading...</div>}
       </button>
         <button type="button" onClick={closePopup}>

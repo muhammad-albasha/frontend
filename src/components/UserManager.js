@@ -15,7 +15,7 @@ export const UserManager = () => {
             role: 'user',
             has2FA: false,
             active: false,
-            stories: [{ title: '' }]
+            stories: [{ story: '' }]
         }
     });
 
@@ -46,6 +46,7 @@ export const UserManager = () => {
 
     const handleUserSelection = (e) => {
         const userId = e.target.value;
+        fetchUserStories(userId);
         const users = getValues('users');
         const selectedUser = users.find(user => user._id === userId);
         reset({ ...getValues(), selectedUserId: userId, ...selectedUser, addingUser: false });
@@ -78,6 +79,27 @@ export const UserManager = () => {
             console.error('Error at user operation:', error);
         }
     };
+    const fetchUserStories = useCallback(async (userId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:5000/api/users/${userId}/stories`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const storiesData = await response.json();
+            if (Array.isArray(storiesData)) {
+                // Assuming each story object has a 'title' property
+                setValue('stories', storiesData.map(story => ({ story: story.story })));
+            } else {
+                console.error('Unexpected response from server:', storiesData);
+            }
+        } catch (error) {
+            console.error('Error fetching user stories:', error);
+        }
+    }, [setValue]);
 
     const addUser = () => {
         reset({
@@ -92,7 +114,7 @@ export const UserManager = () => {
             role: 'user',
             has2FA: false,
             active: true,
-            stories: [{ title: '' }]
+            stories: [{ story: '' }]
         });
     };
 
@@ -100,6 +122,7 @@ export const UserManager = () => {
         control,
         name: "stories"
     });
+
 
     return (
         <div className="user-container">
@@ -137,13 +160,13 @@ export const UserManager = () => {
                         {fields.map((field, index) => (
                             <div key={field.id}>
                                 <input
-                                    {...register(`stories.${index}.title`)}
-                                    defaultValue={field.title}
+                                    {...register(`stories.${index}.story`)}
+                                    defaultValue={field.story} // Set the default value to the title of the story
                                 />
-                                <button type="button" onClick={() => remove(index)}>Remove</button>
+                                <button className="remove" type="button" onClick={() => remove(index)}>Remove</button>
                             </div>
                         ))}
-                        <button type="button" onClick={() => append({ title: '' })}>
+                        <button type="button" onClick={() => append({ story: '' })}>
                             Add Story
                         </button>
                     </div>
@@ -153,6 +176,7 @@ export const UserManager = () => {
             )}
             <br />
             <button onClick={addUser}>Add User</button>
+            
         </div>
     );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Step } from './Step';
 
 export const Stories = () => {
@@ -8,28 +8,27 @@ export const Stories = () => {
     const [selectedStep, setSelectedStep] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
 
+    const fetchStories = useCallback(async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/stories', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await response.json();
+            setStories(data);
+        } catch (error) {
+            console.error('Error fetching stories', error);
+        }
+    }
+    , []);
+
     useEffect(() => {
-        const fetchStories = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:5000/api/stories', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                const data = await response.json();
-                setStories(data);
-                console.log("🚀 ~ data:", data);
-
-            } catch (error) {
-                console.error('Error fetching stories', error);
-            }
-        };
-
         fetchStories();
-    }, []);
+    }, [fetchStories]);
 
     const handleStorySelection = (e) => {
         const selectedId = e.target.value;
@@ -59,6 +58,7 @@ export const Stories = () => {
         setShowPopup(false);
     };
 
+
     return (
         <div className="story-container">
             <h2>Stories</h2>
@@ -84,7 +84,7 @@ export const Stories = () => {
                     {showPopup && (
                         <div className='backdrop'>
                             <div className='popup'>
-                                <Step story={selectedStory} step={selectedStep} closePopup={closePopup} />
+                            <Step story={selectedStory} step={selectedStep} closePopup={closePopup}/>
                             </div>
                         </div>
                     )}
