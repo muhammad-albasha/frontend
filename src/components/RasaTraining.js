@@ -5,17 +5,18 @@ import { Stories } from './Stories';
 import { UserManager } from './UserManager';
 
 const RasaTraining = () => {
-  const { logout, userRole, isAuthenticated } = useAuth();
+  const { logout, user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate.to('/');
+      navigate('/');
     }
   }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     logout();
+    navigate('/');
   };
 
   return (
@@ -28,7 +29,7 @@ const RasaTraining = () => {
         <div className="story-section">
           <Stories />
         </div>
-        {userRole === 'admin' && (
+        {user && user.role === 'admin' && (
           <div className="user-section">
             <UserManager />
           </div>

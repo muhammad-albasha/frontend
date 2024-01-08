@@ -25,7 +25,7 @@ const LoginForm = () => {
       }
       
       const result = await response.json();
-      login(result.token, result.role);
+      login(result.token);
       navigate('/rasa-training');
 
     } catch (error) {
