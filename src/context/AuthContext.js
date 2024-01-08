@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
-    const interval = setInterval(checkTokenValidity, 60000); // Überprüft alle 60 Sekunden
+    const interval = setInterval(checkTokenValidity, 60000);
     return () => clearInterval(interval);
   }, [logout]);
 

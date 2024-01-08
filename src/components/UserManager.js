@@ -81,6 +81,7 @@ export const UserManager = () => {
     const active = watch('active');
 
     const onSubmit = async (data) => {
+        console.log("🚀 ~ data:", data);
         const { selectedUserId, users, _id, ...userData } = data;
         const token = localStorage.getItem('token');
         const url = selectedUserId ? 
@@ -93,6 +94,8 @@ export const UserManager = () => {
             ...userData,
             stories: userData.stories.map(s => s._id)
         };
+        console.log("🚀 ~ updatedUserData:", updatedUserData);
+        
         try {
             await fetch(url, {
                 method: method,
@@ -120,7 +123,7 @@ export const UserManager = () => {
             });
             const storiesData = await response.json();
             if (Array.isArray(storiesData)) {
-                setValue('stories', storiesData.map(story => ({ story: story.story })));
+                setValue('stories', storiesData);
             } else {
                 console.error('Unexpected response from server:', storiesData);
             }
