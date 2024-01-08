@@ -4,7 +4,7 @@ import React from 'react';
 
 
 let validateTimer = null;
-export const Step = ({ step, closePopup, handleUpdateStepState }) => {
+export const Step = ({ step, closePopup, handleUpdateStepState, handleAddStepState }) => {
 
   const { control, register, setValue, handleSubmit, watch, getValues, formState: {
     errors,
@@ -98,6 +98,7 @@ export const Step = ({ step, closePopup, handleUpdateStepState }) => {
           console.log("Step saved, response:", responseData);
           closePopup();
           handleUpdateStepState(responseData);
+          handleAddStepState(responseData);
         } else {
           throw new Error(`Error: ${response.status}`);
         }

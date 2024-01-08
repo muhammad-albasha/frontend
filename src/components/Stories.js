@@ -69,6 +69,21 @@ const handleUpdateStepState = (updatedStep) => {
     });
 };
 
+const handleAddStepState = (newStep) => {
+    setStories((prevStories) => {
+        return prevStories.map((story) => {
+            if (story._id === newStep.story_id) {
+                // Erstelle eine Kopie der aktuellen Schritte und füge den neuen Schritt hinzu
+                const updatedSteps = [...story.steps, newStep];
+                // Erstelle eine aktualisierte Kopie der Story mit den neuen Schritten
+                return { ...story, steps: updatedSteps };
+            }
+            return story;
+        });
+    });
+};
+
+
   return (
     <div className="story-container">
       <h2>Stories</h2>
@@ -102,6 +117,7 @@ const handleUpdateStepState = (updatedStep) => {
               <div className="popup">
                 <Step
                   handleUpdateStepState={handleUpdateStepState}
+                  handleAddStepState={handleAddStepState}
                   story={selectedStory}
                   step={selectedStep}
                   closePopup={closePopup}

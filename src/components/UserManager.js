@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useForm , useFieldArray} from 'react-hook-form';
 
 export const UserManager = () => {
@@ -145,7 +145,7 @@ export const UserManager = () => {
             role: 'user',
             has2FA: false,
             active: true,
-            stories: [{ story: '' }]
+            stories: []
         });
     };
 
@@ -168,6 +168,39 @@ export const UserManager = () => {
         !fields.some(field => field._id === story._id)
     );
     
+    
+    const [isStoryPopupOpen, setIsStoryPopupOpen] = useState(false);
+    const [newStoryTitle, setNewStoryTitle] = useState("");
+
+    const openStoryPopup = () => setIsStoryPopupOpen(true);
+    const closeStoryPopup = () => setIsStoryPopupOpen(false);
+    
+    const handleNewStoryChange = (e) => setNewStoryTitle(e.target.value);
+
+    const handleCreateStory = async () => {
+        if (!newStoryTitle) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/api/users/story', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ story: newStoryTitle }),
+            });
+            if (response.ok) {
+                setNewStoryTitle("");
+                closeStoryPopup();
+                fetchAllStories();
+            } else {
+                throw new Error('Failed to create story');
+            }
+        } catch (error) {
+            console.error('Error creating story:', error);
+        }
+    };
 
     return (
         <div className="user-container">
@@ -223,7 +256,26 @@ export const UserManager = () => {
             </form>
             )}
             <br />
-            <button onClick={addUser}>Add User</button>
+            {!watch('addingUser') && !isStoryPopupOpen && (
+            <button onClick={addUser}>Create User</button>
+            )}
+            {!isStoryPopupOpen && (
+                <button onClick={openStoryPopup}>Create Story</button>
+            )}
+
+            {isStoryPopupOpen && (
+                <div className="story-popup">
+                    <h2>Create Story</h2>
+                    <input 
+                        type="text"
+                        placeholder="Story title"
+                        value={newStoryTitle}
+                        onChange={handleNewStoryChange}
+                    />
+                    <button onClick={handleCreateStory}>Speichern</button>
+                    <button onClick={closeStoryPopup}>Abbrechen</button>
+                </div>
+            )}
             
         </div>
     );
