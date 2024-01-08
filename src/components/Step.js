@@ -107,34 +107,9 @@ export const Step = ({ step, closePopup }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="step-form">
-    <div className="form-content">
-        <label htmlFor="examples">Beispiele</label>
-        <div className="examples-section">
-        {fields.map((field, index) => (
-          <div key={field.id}>
-            <input
-              type="text"
-              defaultValue={field.text}
-              {...register(`examples.${index}.text`, {
-                required: {
-                  value: true,
-                  message: 'Bitte Beispiel angeben'
-                },
-              })}
-            />
-            <button type="button" onClick={() => remove(index)}>
-              x
-            </button>
-          </div>
-        ))}
-        {errors.examples && <p style={{ color: "red" }}>{errors.examples?.root?.message}</p>}
-      </div>
-        <button type="button" onClick={() => append({ text: '' })}>
-          Hinzufügen
-        </button>
-      </div>
+    <div className="step-form-container">
       <div className="rest-section">
-        <label htmlFor="intent">Intent</label>
+        <label htmlFor="intent">Intent:  </label>
         <input type="text"
 
           {...register("intent", {
@@ -216,6 +191,33 @@ export const Step = ({ step, closePopup }) => {
         Abbrechen
         </button>
         </div>
+      </div>
+      <div className="form-content">
+        <label htmlFor="examples">Beispiele</label>
+        <div className="examples-section">
+        {fields.map((field, index) => (
+          <div key={field.id}>
+            <input
+              type="text"
+              defaultValue={field.text}
+              {...register(`examples.${index}.text`, {
+                required: {
+                  value: true,
+                  message: 'Bitte Beispiel angeben'
+                },
+              })}
+            />
+            <button type="button" onClick={() => remove(index)}>
+              x
+            </button>
+          </div>
+        ))}
+        {errors.examples && <p style={{ color: "red" }}>{errors.examples?.root?.message}</p>}
+      </div>
+        <button type="button" onClick={() => append({ text: '' })}>
+          Hinzufügen
+        </button>
+      </div>
       </div>
     </form>
   );

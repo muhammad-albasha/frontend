@@ -209,9 +209,9 @@
   z-index: 200;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 60%;
-  max-width: 600px;
-  max-height: 80%; 
+  width: 70%;
+  /* max-width: 600px; */
+  /* max-height: 80%;  */
   overflow-y: auto;
 }
 
@@ -220,4 +220,42 @@
   position: relative;
   width: auto;
   cursor: pointer;
+}
+
+.step-form-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.rest-section, .form-content {
+  flex: 1;
+  padding: 10px;
+  margin: 10px;
+}
+
+/* Stellen Sie sicher, dass rest-section und form-content nicht zu breit werden */
+@media (min-width: 768px) {
+  .rest-section, .form-content {
+    max-width: 50%;
+  }
+}
+
+.examples-section {
+  overflow-y: auto;
+  margin: 15px 0;
+  max-height: 300px;
+  /* height: 300px; */
+}
+
+.examples-section input {
+  list-style-type: none;
+  padding: 0;
+  width: 90%;
+  margin: 0 10px 0 0;
+}
+
+.form-footer {
+  position: absolute;
+  display: flex;
+  bottom: 40px;
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from "react";
 import { useForm , useFieldArray} from 'react-hook-form';
 
 export const UserManager = () => {
-    const { register, handleSubmit, control, setValue, watch, getValues, reset } = useForm({
+    const { register, handleSubmit, control, watch, setValue, getValues, reset } = useForm({
         defaultValues: {
             users: [],
             selectedUserId: '',
@@ -15,7 +15,9 @@ export const UserManager = () => {
             role: 'user',
             has2FA: false,
             active: false,
-            stories: [{ story: '' }]
+            stories: [{ story: '' }],
+            selectedStoryId: '',
+            allStories: []
         }
     });
 
@@ -40,9 +42,31 @@ export const UserManager = () => {
         }
     }, [setValue]);
 
+    const fetchAllStories = useCallback(async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:5000/api/stories`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const stories = await response.json();
+            if (Array.isArray(stories)) {
+                setValue('allStories', stories);
+            } else {
+                console.error('Unexpected response from server:', stories);
+            }
+        } catch (error) {
+            console.error('Error fetching stories:', error);
+        }
+    }, [setValue]);
+
     useEffect(() => {
         fetchUsers();
-    }, [fetchUsers]);
+        fetchAllStories();
+    }, [fetchUsers, fetchAllStories]);
 
     const handleUserSelection = (e) => {
         const userId = e.target.value;
@@ -65,6 +89,10 @@ export const UserManager = () => {
         const method = selectedUserId ? 'PUT' : 'POST';
         console.log("🚀 ~ url:", url);
         console.log("🚀 ~ userData:", userData);
+        const updatedUserData = {
+            ...userData,
+            stories: userData.stories.map(s => s._id)
+        };
         try {
             await fetch(url, {
                 method: method,
@@ -72,7 +100,7 @@ export const UserManager = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify(userData),
+                body: JSON.stringify(updatedUserData),
             });
     
             fetchUsers();
@@ -92,7 +120,6 @@ export const UserManager = () => {
             });
             const storiesData = await response.json();
             if (Array.isArray(storiesData)) {
-                // Assuming each story object has a 'title' property
                 setValue('stories', storiesData.map(story => ({ story: story.story })));
             } else {
                 console.error('Unexpected response from server:', storiesData);
@@ -124,6 +151,20 @@ export const UserManager = () => {
         name: "stories"
     });
 
+    const handleAddStory = () => {
+        const selectedStoryId = getValues("selectedStoryId");
+        const allStories = getValues("allStories");
+        const storyToAdd = allStories.find(story => story._id === selectedStoryId);
+        if (storyToAdd) {
+            append({ story: storyToAdd.story, _id: storyToAdd._id });
+            setValue("selectedStoryId", ''); // Reset der Auswahl
+        }
+    };
+
+    const remainingStories = watch("allStories").filter(story => 
+        !fields.some(field => field._id === story._id)
+    );
+    
 
     return (
         <div className="user-container">
@@ -156,20 +197,23 @@ export const UserManager = () => {
                     <input id="has2FA" type="checkbox" {...register('has2FA')} checked={has2FA} />
                     <label htmlFor="active">Aktiv:</label>
                     <input id="active" type="checkbox" {...register('active')} checked={active} />
-                    <div>
+                    <div className="stories-list">
                         <label>Stories:</label>
-                        {fields.map((field, index) => (
-                            <div key={field.id}>
-                                <input
-                                    {...register(`stories.${index}.story`)}
-                                    defaultValue={field.story} // Set the default value to the title of the story
-                                />
-                                <button className="remove" type="button" onClick={() => remove(index)}>Remove</button>
-                            </div>
-                        ))}
-                        <button type="button" onClick={() => append({ story: '' })}>
-                            Add Story
-                        </button>
+                        <ul>
+                            {fields.map((field, index) => (
+                                <li key={field.id}>
+                                    {field.story}
+                                    <button type="button" onClick={() => remove(index)}>Remove</button>
+                                </li>
+                            ))}
+                        </ul>
+                        <select {...register("selectedStoryId")}>
+                            <option value="">Wähle eine Story</option>
+                                {remainingStories.map(story => (
+                                    <option key={story._id} value={story._id}>{story.story}</option>
+                                ))}
+                        </select>
+                    <button type="button" onClick={handleAddStory}>Story hinzufügen</button>
                     </div>
                     <button type="submit">Speichern</button>
                 </div>
