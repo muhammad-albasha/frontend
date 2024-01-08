@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Stories } from './Stories';
 import { UserManager } from './UserManager';
 
 const RasaTraining = () => {
-  const { logout, userRole } = useAuth();
+  const { logout, userRole, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate.to('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogout = () => {
     logout();
-    navigate('/');
   };
 
   return (

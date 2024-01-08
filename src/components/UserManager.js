@@ -74,6 +74,7 @@ export const UserManager = () => {
                 },
                 body: JSON.stringify(userData),
             });
+    
             fetchUsers();
         } catch (error) {
             console.error('Error at user operation:', error);
