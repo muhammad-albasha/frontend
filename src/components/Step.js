@@ -1,7 +1,6 @@
 // components/Step.js
 import { useForm, useFieldArray } from 'react-hook-form';
 import React from 'react';
-import { useEffect, useCallback } from 'react';
 
 
 
@@ -48,42 +47,6 @@ export const Step = ({ step, closePopup}) => {
     }
   });
 
-  // const fetchResponse = useCallback(async () => {
-  //   try {
-  //     const token = localStorage.getItem('token');
-  
-  //     // Assuming step.story_id and step._id are available and correctly set
-  //     const storyId = step.story_id;
-  //     const stepId = step._id;
-  
-  //     const response = await fetch(`http://localhost:5000/api/stories/${storyId}/steps/${stepId}`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': `Bearer ${token}`,
-  //       },
-  //     });
-  
-  //     const data = await response.json();
-      
-  //     setValue('response.text', data.text);
-  //     setValue('response.images', data.images);
-  //     setValue('response.attachments', data.attachments);
-      
-  //     setValue('showImages', data.images && data.images.length > 0);
-  //     setValue('showAttachments', data.attachments && data.attachments.length > 0);
-      
-  //   } catch (error) {
-  //     console.error('Error fetching response details', error);
-  //   }
-  // }, [setValue, step]);
-
-  // useEffect(() => {
-  //   if (step && step.response_id) {
-  //     fetchResponse(step.response_id);
-  //   }
-  // }, [step, step?.response_id, fetchResponse]);
-
   const toggleShowImages = () => {
     const currentShowImages = getValues("showImages");
     setValue("showImages", !currentShowImages);
@@ -101,14 +64,14 @@ export const Step = ({ step, closePopup}) => {
   };
   
   const onSubmit = async (data) => {
-    if (!step.story_id) {
-        console.error('Story ID is missing');
-        return;
+    if (!step || !step.story_id) {
+      console.error('Story ID is missing');
+      return;
     }
 
     data.examples = data.examples.map(example => example.text);
     const stepData = {
-        storyId: step.story_id,  // Include storyId in the data
+        storyId: step.story_id, // Used for creating a new step
         intent: data.intent,
         examples: data.examples,
         action: 'answer',
@@ -119,14 +82,19 @@ export const Step = ({ step, closePopup}) => {
 
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/stories/steps`, {
-            method: 'POST',
+        const url = step._id
+            ? `http://localhost:5000/api/stories/steps/${step._id}`
+            : `http://localhost:5000/api/stories/steps`;
+
+        const response = await fetch(url, {
+            method: step._id ? 'PUT' : 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify(stepData)
         });
+
         const responseData = await response.json();
         console.log("🚀 ~ data", responseData);
         closePopup();
@@ -135,15 +103,8 @@ export const Step = ({ step, closePopup}) => {
     }
 
     console.log("🚀 ~ stepData", stepData);
+};
 
-    console.log("🚀 ~ response_id", step.response_id);
-
-    if (step && step._id) {
-      console.log("Update Step", stepData);
-    } else {
-      console.log("Create Step", stepData);
-    }
-  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="step-form">

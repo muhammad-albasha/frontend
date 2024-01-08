@@ -39,10 +39,10 @@ export const Stories = () => {
     };
 
     const handleStepClick = (step) => {
-        setSelectedStep(step);
+        setSelectedStep({ ...step, story_id: selectedStory._id });
         setShowPopup(true);
     };
-
+    
     const addStep = () => {
         const newStep = {
             story_id: selectedStory._id,
@@ -52,7 +52,8 @@ export const Stories = () => {
         };
         setSelectedStep(newStep);
         setShowPopup(true);
-    }
+    };
+    
 
     const closePopup = () => {
         setShowPopup(false);
