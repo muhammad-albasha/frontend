@@ -81,8 +81,8 @@ export const Step = ({ step, closePopup, handleUpdateStepState, handleAddStepSta
     try {
         const token = localStorage.getItem('token');
         const url = step._id
-            ? `http://localhost:5000/api/stories/steps/${step._id}`
-            : `http://localhost:5000/api/stories/steps`;
+            ? `https://chatbot.uni-wuppertal.de/api/stories/steps/${step._id}`
+            : `https://chatbot.uni-wuppertal.de/api/stories/steps`;
 
         const response = await fetch(url, {
             method: step._id ? 'PUT' : 'POST',
@@ -129,7 +129,7 @@ export const Step = ({ step, closePopup, handleUpdateStepState, handleAddStepSta
               await new Promise(
                 (resolve) => (validateTimer = setTimeout(resolve, 500))
               );
-              const isValid = await fetch(`http://localhost:5000/api/stories/check-intent`, {
+              const isValid = await fetch(`https://chatbot.uni-wuppertal.de/api/stories/check-intent`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

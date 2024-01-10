@@ -24,7 +24,7 @@ export const UserManager = () => {
     const fetchUsers = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/users`, {
+            const response = await fetch(`https://chatbot.uni-wuppertal.de/api/users`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export const UserManager = () => {
     const fetchAllStories = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/stories`, {
+            const response = await fetch(`https://chatbot.uni-wuppertal.de/api/stories`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,8 +85,8 @@ export const UserManager = () => {
         const { selectedUserId, users, _id, ...userData } = data;
         const token = localStorage.getItem('token');
         const url = selectedUserId ? 
-        `http://localhost:5000/api/users/user/${selectedUserId}` : 
-        `http://localhost:5000/api/users/user`;
+        `https://chatbot.uni-wuppertal.de/api/users/user/${selectedUserId}` : 
+        `https://chatbot.uni-wuppertal.de/api/users/user`;
         const method = selectedUserId ? 'PUT' : 'POST';
         console.log("🚀 ~ url:", url);
         console.log("🚀 ~ userData:", userData);
@@ -114,7 +114,7 @@ export const UserManager = () => {
     const fetchUserStories = useCallback(async (userId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/users/${userId}/stories`, {
+            const response = await fetch(`https://chatbot.uni-wuppertal.de/api/users/${userId}/stories`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ export const UserManager = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/api/users/story', {
+            const response = await fetch('https://chatbot.uni-wuppertal.de/api/users/story', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
